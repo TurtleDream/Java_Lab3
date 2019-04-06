@@ -31,8 +31,8 @@ public class Main extends AbstractVerticle {
         });
 
         router.route("/form").handler(ctx -> {
-            ctx.response().setChunked(true);
 
+            ctx.response().setChunked(true);
             String html = "";
 
             for (FileUpload f : ctx.fileUploads()) {
@@ -52,21 +52,21 @@ public class Main extends AbstractVerticle {
                 if (file.isFile()) {
                     html = html + "<a href=\"/files/uploads/" + file.getName() + "\"><img src=\"/files/uploads/" + file.getName() + "\" style=\"width:200x;height:200px\" hspace=\"5px\" vspace=\"5px\" border = \"1px\"></a>\n";
                 }
-
             }
+
             ctx.response().putHeader("Content-Type", "text/html").end(html);
         });
 
         router.route("/files/uploads/:image").handler(fh -> {
-            String image = fh.request().getParam("image");
             fh.response().setChunked(true);
-            Buffer uploadedFile = vertx.fileSystem().readFileBlocking("uploads/"+image);
+            Buffer uploadedFile = vertx.fileSystem().readFileBlocking("uploads/" + fh.request().getParam("image"));
             fh.response().write(uploadedFile);
             fh.response().putHeader("Content-Type", "image/*").end();
         });
 
         vertx.createHttpServer().requestHandler(router).listen(8080);
     }
+
     public static void main(String[] args) {
         final Vertx vertx = Vertx.vertx();
         vertx.deployVerticle(new Main());
